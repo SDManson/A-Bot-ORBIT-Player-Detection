@@ -6,22 +6,23 @@ namespace Sanderling.ABot.Exe
 {
 	public partial class MainWindow : Window
 	{
-		public string TitleComputed =>
-			"A-Bot v" + (TryFindResource("AppVersionId") ?? "");
-
 		public MainWindow()
 		{
 			InitializeComponent();
 		}
 
-		private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+		public string TitleComputed =>
+			"A-Bot v" + (TryFindResource("AppVersionId") ?? "");
+
+		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
 			ProcessInput();
 		}
 
 		public void ProcessInput()
 		{
-			if (App.SetKeyBotMotionDisable?.Any(setKey => setKey?.All(key => Keyboard.IsKeyDown(key)) ?? false) ?? false)
+			if (App.SetKeyBotMotionDisable?.Any(setKey => setKey?.All(key => Keyboard.IsKeyDown(key)) ?? false) ??
+			    false)
 				Main?.BotMotionDisable();
 		}
 	}

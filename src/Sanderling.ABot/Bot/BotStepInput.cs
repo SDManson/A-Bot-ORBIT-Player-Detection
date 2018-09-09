@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BotEngine.Interface;
+using Sanderling.Interface.MemoryStruct;
 
 namespace Sanderling.ABot.Bot
 {
-	public class MotionResult
-	{
-		public Int64 Id;
-
-		public bool Success;
-	}
-
 	public class BotStepInput
 	{
-		public Int64 TimeMilli;
-
-		public BotEngine.Interface.FromProcessMeasurement<Interface.MemoryStruct.IMemoryMeasurement> FromProcessMemoryMeasurement;
-
 		public StringAtPath ConfigSerial;
 
-		public MotionResult[] StepLastMotionResult;
+		public FromProcessMeasurement<IMemoryMeasurement> FromProcessMemoryMeasurement;
 
 		public IEnumerable<IBotTask> RootTaskListComponentOverride;
+
+		public MotionResult[] StepLastMotionResult;
+		public long TimeMilli;
 	}
 }

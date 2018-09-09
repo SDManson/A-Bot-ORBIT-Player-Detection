@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Sanderling.Motor;
 using Sanderling.ABot.Parse;
+using Sanderling.Motor;
 
 namespace Sanderling.ABot.Bot.Task
 {
@@ -23,7 +23,8 @@ namespace Sanderling.ABot.Bot.Task
 				{
 					RootUIElement = memoryMeasurement?.InfoPanelCurrentSystem?.ListSurroundingsButton,
 					Bot = Bot,
-					ListMenuListPriorityEntryRegexPattern = new[] { new[] { retreatBookmark }, new[] { @"dock", ParseStatic.MenuEntryWarpToAtLeafRegexPattern } },
+					ListMenuListPriorityEntryRegexPattern = new[]
+						{new[] {retreatBookmark}, new[] {@"dock", ParseStatic.MenuEntryWarpToAtLeafRegexPattern}}
 				};
 			}
 		}

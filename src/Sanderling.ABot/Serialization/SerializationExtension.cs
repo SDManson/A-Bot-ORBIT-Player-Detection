@@ -1,19 +1,12 @@
-﻿using BotEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BotEngine;
 
 namespace Sanderling.ABot.Serialization
 {
-	public class Deserialization
+	public static class SerializationExtension
 	{
-		public string Serial;
-
-		public Exception Exception;
-	}
-
-	static public class SerializationExtension
-	{
-		static public KeyValuePair<Deserialization, T> DeserializeIfDifferent<T>(
+		public static KeyValuePair<Deserialization, T> DeserializeIfDifferent<T>(
 			this string newValueSerial,
 			KeyValuePair<Deserialization, T> oldValue)
 		{
@@ -21,7 +14,7 @@ namespace Sanderling.ABot.Serialization
 				return oldValue;
 
 			Exception exception = null;
-			T newValueStruct = default(T);
+			var newValueStruct = default(T);
 
 			try
 			{
@@ -33,7 +26,8 @@ namespace Sanderling.ABot.Serialization
 				exception = e;
 			}
 
-			return new KeyValuePair<Deserialization, T>(new Deserialization { Serial = newValueSerial, Exception = exception }, newValueStruct);
+			return new KeyValuePair<Deserialization, T>(
+				new Deserialization {Serial = newValueSerial, Exception = exception}, newValueStruct);
 		}
 	}
 }

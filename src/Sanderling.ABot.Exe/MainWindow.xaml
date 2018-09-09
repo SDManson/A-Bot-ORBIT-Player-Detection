@@ -9,8 +9,8 @@
         Title="{Binding RelativeSource={RelativeSource Self}, Path=TitleComputed, FallbackValue=A-Bot vXXXX}"
         Height="350" Width="525"
         KeyDown="Window_KeyDown">
-    <Grid>
-        <Sanderling.ABot.UI:Main
-            x:Name="Main"></Sanderling.ABot.UI:Main>
-    </Grid>
+	<Grid>
+		<Sanderling.ABot.UI:Main
+			x:Name="Main" />
+	</Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BotEngine.Motor;
 using Sanderling.Motor;
 using Sanderling.Parse;
 
@@ -21,7 +22,8 @@ namespace Sanderling.ABot.Bot.Task
 				if (!(MemoryMeasurement?.IsDocked ?? false))
 					yield break;
 
-				yield return MemoryMeasurement?.WindowStation?.FirstOrDefault()?.UndockButton?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
+				yield return MemoryMeasurement?.WindowStation?.FirstOrDefault()?.UndockButton
+					?.MouseClick(MouseButtonIdEnum.Left);
 			}
 		}
 	}

@@ -1,27 +1,30 @@
-﻿using BotEngine.Interface;
+﻿using System.Linq;
+using BotEngine.Interface;
 using Moq;
 using NUnit.Framework;
+using Sanderling.ABot.Bot;
 using Sanderling.ABot.Bot.Task;
 using Sanderling.ABot.UI;
 using Sanderling.Interface.MemoryStruct;
-using System.Linq;
 
 namespace Sanderling.ABot.Test.Exe
 {
 	public class BotStep
 	{
-		static void AssertStringContainedInString(string expectedString, string containingString)
+		private static void AssertStringContainedInString(string expectedString, string containingString)
 		{
 			if (!(containingString?.Contains(expectedString) ?? false))
-				throw new AssertionException("expected string \"" + expectedString + "\" not contained ín string \"" + containingString + "\"");
+				throw new AssertionException("expected string \"" + expectedString + "\" not contained ín string \"" +
+				                             containingString + "\"");
 		}
 
 		[Test]
 		public void Bot_Step_Diagnostic_Local_Chat_Window_Not_Found()
 		{
-			var stepResult = new Bot.Bot().Step(new Bot.BotStepInput { });
+			var stepResult = new Bot.Bot().Step(new BotStepInput());
 
-			AssertStringContainedInString(SaveShipTask.LocalChatWindowNotFoundDiagnosticText, stepResult?.RenderBotStepToUIText());
+			AssertStringContainedInString(SaveShipTask.LocalChatWindowNotFoundDiagnosticText,
+				stepResult?.RenderBotStepToUIText());
 		}
 
 		[Test]
@@ -35,14 +38,18 @@ namespace Sanderling.ABot.Test.Exe
 			var memoryMeasurementMock = new Mock<IMemoryMeasurement>();
 
 			memoryMeasurementMock
-				.Setup(memoryMeasurement => memoryMeasurement.InfoPanelButtonCurrentSystem).Returns(infoPanelCurrentSystemEnableButtonMock.Object);
+				.Setup(memoryMeasurement => memoryMeasurement.InfoPanelButtonCurrentSystem)
+				.Returns(infoPanelCurrentSystemEnableButtonMock.Object);
 
-			var stepResult = new Bot.Bot().Step(new Bot.BotStepInput
+			var stepResult = new Bot.Bot().Step(new BotStepInput
 			{
-				FromProcessMemoryMeasurement = new FromProcessMeasurement<IMemoryMeasurement>(memoryMeasurementMock.Object, 0, 0)
+				FromProcessMemoryMeasurement =
+					new FromProcessMeasurement<IMemoryMeasurement>(memoryMeasurementMock.Object, 0, 0)
 			});
 
-			Assert.That(stepResult?.ListMotion?.FirstOrDefault()?.MotionParam?.MouseListWaypoint?.FirstOrDefault()?.UIElement == infoPanelCurrentSystemEnableButtonMock.Object);
+			Assert.That(
+				stepResult?.ListMotion?.FirstOrDefault()?.MotionParam?.MouseListWaypoint?.FirstOrDefault()?.UIElement ==
+				infoPanelCurrentSystemEnableButtonMock.Object);
 		}
 
 		[Test]
@@ -58,15 +65,20 @@ namespace Sanderling.ABot.Test.Exe
 			var memoryMeasurementMock = new Mock<IMemoryMeasurement>();
 
 			memoryMeasurementMock
-				.Setup(memoryMeasurement => memoryMeasurement.InfoPanelCurrentSystem).Returns(infoPanelCurrentSystemMock.Object);
+				.Setup(memoryMeasurement => memoryMeasurement.InfoPanelCurrentSystem)
+				.Returns(infoPanelCurrentSystemMock.Object);
 
-			var stepResult = new Bot.Bot().Step(new Bot.BotStepInput
+			var stepResult = new Bot.Bot().Step(new BotStepInput
 			{
-				FromProcessMemoryMeasurement = new FromProcessMeasurement<IMemoryMeasurement>(memoryMeasurementMock.Object, 0, 0)
+				FromProcessMemoryMeasurement =
+					new FromProcessMeasurement<IMemoryMeasurement>(memoryMeasurementMock.Object, 0, 0)
 			});
 
-			Assert.That(stepResult?.OutputListTaskPath?.Any(taskPath => taskPath?.OfType<RetreatTask>()?.Any() ?? false) ?? false);
-			Assert.That(stepResult?.ListMotion?.FirstOrDefault()?.MotionParam?.MouseListWaypoint?.FirstOrDefault()?.UIElement == listSurroundingsButton);
+			Assert.That(
+				stepResult?.OutputListTaskPath?.Any(taskPath => taskPath?.OfType<RetreatTask>()?.Any() ?? false) ??
+				false);
+			Assert.That(stepResult?.ListMotion?.FirstOrDefault()?.MotionParam?.MouseListWaypoint?.FirstOrDefault()
+				            ?.UIElement == listSurroundingsButton);
 		}
 	}
 }

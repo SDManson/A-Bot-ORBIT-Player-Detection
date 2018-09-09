@@ -2,9 +2,9 @@
 
 namespace Sanderling.ABot
 {
-	static public class EnumerableExtension
+	public static class EnumerableExtension
 	{
-		static public IEnumerable<IEnumerable<T>> EnumerateSubsequencesStartingWithFirstElement<T>(
+		public static IEnumerable<IEnumerable<T>> EnumerateSubsequencesStartingWithFirstElement<T>(
 			this IEnumerable<T> sequence)
 		{
 			var subsequence = new List<T>();

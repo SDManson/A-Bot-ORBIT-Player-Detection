@@ -1,75 +1,95 @@
-﻿using Bib3;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Bib3;
 using BotEngine.Common;
 using Sanderling.ABot.Bot.Task;
 using Sanderling.Interface.MemoryStruct;
 using Sanderling.Motor;
 using Sanderling.Parse;
-using System.Collections.Generic;
-using System.Linq;
+using IOverviewEntry = Sanderling.Parse.IOverviewEntry;
+using IShipUiModule = Sanderling.Accumulation.IShipUiModule;
 
 namespace Sanderling.ABot.Bot
 {
-	static public class BotExtension
+	public static class BotExtension
 	{
-		static readonly EWarTypeEnum[][] listEWarPriorityGroup = new[]
+		private static readonly EWarTypeEnum[][] listEWarPriorityGroup =
 		{
-			new[] { EWarTypeEnum.ECM },
-			new[] { EWarTypeEnum.Web},
-			new[] { EWarTypeEnum.WarpDisrupt, EWarTypeEnum.WarpScramble },
+			new[] {EWarTypeEnum.ECM},
+			new[] {EWarTypeEnum.Web},
+			new[] {EWarTypeEnum.WarpDisrupt, EWarTypeEnum.WarpScramble}
 		};
 
-		static public int AttackPriorityIndexForOverviewEntryEWar(IEnumerable<EWarTypeEnum> setEWar)
+		public static int AttackPriorityIndexForOverviewEntryEWar(IEnumerable<EWarTypeEnum> setEWar)
 		{
 			var setEWarRendered = setEWar?.ToArray();
 
 			return
 				listEWarPriorityGroup.FirstIndexOrNull(priorityGroup => priorityGroup.ContainsAny(setEWarRendered)) ??
-				(listEWarPriorityGroup.Length + (0 < setEWarRendered?.Length ? 0 : 1));
+				listEWarPriorityGroup.Length + (0 < setEWarRendered?.Length ? 0 : 1);
 		}
 
-		static public int AttackPriorityIndex(
+		public static int AttackPriorityIndex(
 			this Bot bot,
-			Sanderling.Parse.IOverviewEntry entry) =>
-			AttackPriorityIndexForOverviewEntryEWar(bot?.OverviewMemory?.SetEWarTypeFromOverviewEntry(entry));
+			IOverviewEntry entry)
+		{
+			return AttackPriorityIndexForOverviewEntryEWar(bot?.OverviewMemory?.SetEWarTypeFromOverviewEntry(entry));
+		}
 
-		static public bool ShouldBeIncludedInStepOutput(this IBotTask task) =>
-			(task?.ContainsEffect() ?? false) || task is DiagnosticTask;
+		public static bool ShouldBeIncludedInStepOutput(this IBotTask task)
+		{
+			return (task?.ContainsEffect() ?? false) || task is DiagnosticTask;
+		}
 
-		static public bool LastContainsEffect(this IEnumerable<IBotTask> listTask) =>
-			listTask?.LastOrDefault()?.ContainsEffect() ?? false;
+		public static bool LastContainsEffect(this IEnumerable<IBotTask> listTask)
+		{
+			return listTask?.LastOrDefault()?.ContainsEffect() ?? false;
+		}
 
-		static public IEnumerable<MotionParam> ApplicableEffects(this IBotTask task) =>
-			task?.Effects?.WhereNotDefault();
+		public static IEnumerable<MotionParam> ApplicableEffects(this IBotTask task)
+		{
+			return task?.Effects?.WhereNotDefault();
+		}
 
-		static public bool ContainsEffect(this IBotTask task) =>
-			0 < task?.ApplicableEffects()?.Count();
+		public static bool ContainsEffect(this IBotTask task)
+		{
+			return 0 < task?.ApplicableEffects()?.Count();
+		}
 
-		static public IEnumerable<IBotTask[]> TakeSubsequenceWhileUnwantedInferenceRuledOut(this IEnumerable<IBotTask[]> listTaskPath) =>
-			listTaskPath
-			?.EnumerateSubsequencesStartingWithFirstElement()
-			?.OrderBy(subsequenceTaskPath => 1 == subsequenceTaskPath?.Count(BotExtension.LastContainsEffect))
-			?.LastOrDefault();
+		public static IEnumerable<IBotTask[]> TakeSubsequenceWhileUnwantedInferenceRuledOut(
+			this IEnumerable<IBotTask[]> listTaskPath)
+		{
+			return listTaskPath
+				?.EnumerateSubsequencesStartingWithFirstElement()
+				?.OrderBy(subsequenceTaskPath => 1 == subsequenceTaskPath?.Count(LastContainsEffect))
+				?.LastOrDefault();
+		}
 
-		static public IUIElementText TitleElementText(this IModuleButtonTooltip tooltip)
+		public static IUIElementText TitleElementText(this IModuleButtonTooltip tooltip)
 		{
 			var tooltipHorizontalCenter = tooltip?.RegionCenter()?.A;
 
 			var setLabelIntersectingHorizontalCenter =
 				tooltip?.LabelText
-				?.Where(label => label?.Region.Min0 < tooltipHorizontalCenter && tooltipHorizontalCenter < label?.Region.Max0);
+					?.Where(label =>
+						label?.Region.Min0 < tooltipHorizontalCenter && tooltipHorizontalCenter < label?.Region.Max0);
 
 			return
 				setLabelIntersectingHorizontalCenter
-				?.OrderByCenterVerticalDown()?.FirstOrDefault();
+					?.OrderByCenterVerticalDown()?.FirstOrDefault();
 		}
 
-		static public bool ShouldBeActivePermanent(this Accumulation.IShipUiModule module, Bot bot) =>
-			new[]
-			{
-				module?.TooltipLast?.Value?.IsHardener,
-				bot?.ConfigSerialAndStruct.Value?.ModuleActivePermanentSetTitlePattern
-					?.Any(activePermanentTitlePattern => module?.TooltipLast?.Value?.TitleElementText()?.Text?.RegexMatchSuccessIgnoreCase(activePermanentTitlePattern) ?? false),
-			}
-			.Any(sufficientCondition => sufficientCondition ?? false);
+		public static bool ShouldBeActivePermanent(this IShipUiModule module, Bot bot)
+		{
+			return new[]
+				{
+					module?.TooltipLast?.Value?.IsHardener,
+					bot?.ConfigSerialAndStruct.Value?.ModuleActivePermanentSetTitlePattern
+						?.Any(activePermanentTitlePattern =>
+							module?.TooltipLast?.Value?.TitleElementText()?.Text
+								?.RegexMatchSuccessIgnoreCase(activePermanentTitlePattern) ?? false)
+				}
+				.Any(sufficientCondition => sufficientCondition ?? false);
+		}
 	}
 }

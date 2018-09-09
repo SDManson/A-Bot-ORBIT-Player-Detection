@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:Sanderling.ABot.Exe"
              StartupUri="MainWindow.xaml"
              DispatcherUnhandledException="Application_DispatcherUnhandledException">
-    <Application.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Sanderling.ABot.Exe;component/resource.xaml"></ResourceDictionary>
-    </Application.Resources>
+	<Application.Resources>
+		<ResourceDictionary Source="pack://application:,,,/Sanderling.ABot.Exe;component/resource.xaml" />
+	</Application.Resources>
 </Application>

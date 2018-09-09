@@ -1,19 +1,20 @@
-﻿using Bib3;
-using System;
+﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Bib3;
+using BotEngine.Interface;
+using Sanderling.Interface.MemoryStruct;
+using Glob = Bib3.FCL.Glob;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Sanderling.ABot.Exe
 {
 	public partial class App : Application
 	{
-		static string AssemblyDirectoryPath => Bib3.FCL.Glob.ZuProcessSelbsctMainModuleDirectoryPfaadBerecne().EnsureEndsWith(@"\");
-
-		static public Int64 GetTimeStopwatch() => Bib3.Glob.StopwatchZaitMiliSictInt();
-
 		public App()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -25,30 +26,39 @@ namespace Sanderling.ABot.Exe
 			TimerConstruct();
 		}
 
-		private System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		private static string AssemblyDirectoryPath =>
+			Glob.ZuProcessSelbsctMainModuleDirectoryPfaadBerecne().EnsureEndsWith(@"\");
+
+		public static long GetTimeStopwatch()
+		{
+			return Bib3.Glob.StopwatchZaitMiliSictInt();
+		}
+
+		private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
 		{
 			var matchFullName =
 				AppDomain.CurrentDomain.GetAssemblies()
-				?.FirstOrDefault(candidate => string.Equals(candidate.GetName().FullName, args?.Name));
+					?.FirstOrDefault(candidate => string.Equals(candidate.GetName().FullName, args?.Name));
 
 			if (null != matchFullName)
 				return matchFullName;
 
 			var matchName =
 				AppDomain.CurrentDomain.GetAssemblies()
-				?.FirstOrDefault(candidate => string.Equals(candidate.GetName().Name, args?.Name));
+					?.FirstOrDefault(candidate => string.Equals(candidate.GetName().Name, args?.Name));
 
 			return matchName;
 		}
 
-		void TimerConstruct()
+		private void TimerConstruct()
 		{
-			var timer = new DispatcherTimer(TimeSpan.FromSeconds(1.0 / 10), DispatcherPriority.Normal, Timer_Tick, Dispatcher);
+			var timer = new DispatcherTimer(TimeSpan.FromSeconds(1.0 / 10), DispatcherPriority.Normal, Timer_Tick,
+				Dispatcher);
 
 			timer.Start();
 		}
 
-		void Timer_Tick(object sender, object e)
+		private void Timer_Tick(object sender, object e)
 		{
 			Window?.ProcessInput();
 
@@ -65,7 +75,9 @@ namespace Sanderling.ABot.Exe
 		{
 			try
 			{
-				var filePath = AssemblyDirectoryPath.PathToFilesysChild(DateTime.Now.SictwaiseKalenderString(".", 0) + " Exception");
+				var filePath =
+					AssemblyDirectoryPath.PathToFilesysChild(
+						DateTime.Now.SictwaiseKalenderString(".", 0) + " Exception");
 
 				filePath.WriteToFileAndCreateDirectoryIfNotExisting(Encoding.UTF8.GetBytes(e.Exception.SictString()));
 
@@ -83,11 +95,11 @@ namespace Sanderling.ABot.Exe
 			e.Handled = true;
 		}
 
-		private void MainWindow_SimulateMeasurement(Interface.MemoryStruct.IMemoryMeasurement measurement)
+		private void MainWindow_SimulateMeasurement(IMemoryMeasurement measurement)
 		{
 			var time = GetTimeStopwatch();
 
-			MemoryMeasurementLast = new BotEngine.Interface.FromProcessMeasurement<Interface.MemoryStruct.IMemoryMeasurement>(measurement, time, time);
+			MemoryMeasurementLast = new FromProcessMeasurement<IMemoryMeasurement>(measurement, time, time);
 		}
 	}
 }

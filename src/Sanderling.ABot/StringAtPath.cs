@@ -4,6 +4,6 @@
 	{
 		public string Path;
 
-		public string @String;
+		public string String;
 	}
 }
